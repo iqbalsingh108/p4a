@@ -24,7 +24,7 @@ p4a_event_execute_prepare = function (object_name, action_name, param1, param2, 
 	p4a_form.param1.value = param1;
 	p4a_form.param2.value = param2;
 	p4a_form.param3.value = param3;
-	p4a_form.param4.value = param4;
+	p4a_form.param4.value = param4; 
 	p4a_form.UPLOAD_IDENTIFIER.value = object_name + p4a_form._action_id.value;
 }
 
@@ -40,6 +40,35 @@ p4a_rte_update_all_instances = function ()
 p4a_event_execute = function (object_name, action_name, param1, param2, param3, param4)
 {
 	if (p4a_working) return false;
+	
+	if(param2=='copy')
+	{
+		$( "input[name='param3']" ).val( "copy");
+		$('.copy').remove();
+		$('#p4a').append('<input type="hidden" name="copy"  class="copy" value="yes">');	
+	}
+	else if(param2==undefined)
+	{
+		
+		
+	}
+	else
+	{
+		$('.copy').remove(); 
+		
+	}
+	
+	if($( "input[name='copy']" ).val() =='yes')
+	   {
+		   param3 ='copy';
+		
+	   }
+	   else
+	   {
+		   param3 ='';  
+		   
+	   }
+	   
 	p4a_event_execute_prepare(object_name, action_name, 0, param1, param2, param3, param4);
 	p4a_form.target = '';
 	

@@ -350,7 +350,6 @@ class P4A_Mask extends P4A_Object
 		if (!$p4a->inAjaxCall()) require P4A_THEME_DIR . "/p4a_footer.php";
 		$output = ob_get_contents();
 		ob_end_clean();
-
 		$this->clearTempVars();
 		return $output;
 	}
@@ -416,10 +415,10 @@ class P4A_Mask extends P4A_Object
 	 * Validate all fields and saves row to the data source
 	 * @return boolean
 	 */
-	public function saveRow()
+	public function saveRow($feilds=array())
 	{
 		if ($this->validateFields()) {
-			$this->data->saveRow();
+			$this->data->saveRow($feilds);
 			return true;
 		}
 		return false;
