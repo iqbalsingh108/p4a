@@ -878,21 +878,25 @@ class P4A_DB_Source extends P4A_Data_Source
 	 */
 	public function saveRow($fields_values = array(), $pk_values = array())
 	{
-		
-		if(count($fields_values)>0)
+		 $copy  = false; 
+         		 
+		if(is_array($fields_values) && count($fields_values)>0 && isset($fields_values['copy']))
 		{
 			$this->_pointer = 0;
-		   	$fields_values = array();
-		}
+			/******
+			 Here $fields_values are becoming empty for  further   feilds  processing
+			********/
+		   	unset($fields_values['copy']);
+			$copy = true;  
+		}  
 		
 		if(!$this->isReadOnly()) {
 			$this->saveUploads();
 			$db = P4A_DB::singleton($this->getDSN());
 			$table = $this->getTable();
 			$schema = $this->getSchema();
-
 			if (empty($fields_values)) {
-				
+	
 				while($field = $this->fields->nextItem()) {
 					if ($field->getSchema() != $schema) continue;
 					if ($field->getTable() != $table) continue;
@@ -912,14 +916,20 @@ class P4A_DB_Source extends P4A_Data_Source
 					}
 				}
 			}
-             if(!$this->_pointer)
+			/*******
+			* Unsetting  primary key field if try to copy the data 
+			*******/
+             if(!$this->_pointer && $copy) 
 			 {
-			  unset($fields_values['trade_id']);	  
-			 }				 
+				 
+				 $primarykey =  $db->adapter->fetchALL("show index from $table where Key_name = 'PRIMARY'");
+			     unset($fields_values[$primarykey[0]['Column_name']]);  	  
+			 }
+              
+            			 
 			$pks = $this->getPk();
 			$p4a_db_table = new P4A_Db_Table(array('name'=>$table, 'schema'=>$schema, 'db'=>$db->adapter));
 			if ($this->isNew()) {
-				
 				$lastinsert_pk_values = $p4a_db_table->insert($fields_values);
 				if ($lastinsert_pk_values !== null) {
 					if (is_array($lastinsert_pk_values)) {

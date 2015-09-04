@@ -414,11 +414,32 @@ class P4A_Mask extends P4A_Object
 	/**
 	 * Validate all fields and saves row to the data source
 	 * @return boolean
+	 *  $feilds can be set for copy row as like array('copy'=>'yes') while saving if copy action  is defined in table widget 
 	 */
-	public function saveRow($feilds=array())
+	public function saveRow($feilds=null)
 	{
+		/********
+		* checking if copy row check is applied here
+		*******/
+		if(is_array($feilds) && count($feilds)>0 && isset($feilds['copy']))
+		{
+		      $passargs = true;	
+		}
+		else
+		{ 
+			$passargs   = false;
+		}
 		if ($this->validateFields()) {
-			$this->data->saveRow($feilds);
+			if($passargs)
+			{
+			  $this->data->saveRow($feilds);	
+			}
+			else
+			{  
+			  $this->data->saveRow();	
+				
+			} 
+			 
 			return true;
 		}
 		return false;
